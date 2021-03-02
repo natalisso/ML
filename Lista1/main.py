@@ -2,47 +2,61 @@ import os
 import pandas as pd
 import numpy as np
 from utils import(
-    k_fold_cross_validation,
     data_pre_processing,
     targets_pre_processing,
+    k_fold_cross_validation,
     split_data,
-    euclidean_distance,
-    train,
-    test
+    k_nearest_neighbors,
+    get_accuracy
 )
 
 
 PARENT_PATH = os.path.dirname(__file__)
-DATASET_PATH =  os.path.join(PARENT_PATH, "datasets/DATATRIEVE_transition.csv")
+DATASETS_DIR =  os.path.join(PARENT_PATH, "datasets")
+RESULTS_DIR = os.path.join(PARENT_PATH, "results")
 
+datasets = ["DATATRIEVE_transition", "KC2"]
+# models = ["knn", "weighted_knn", "adaptive_knn"]
+models = ["knn"]
 
-# Getting the dataset and its infos
-dataset = pd.read_csv(DATASET_PATH)             
-num_attributes = len(dataset.columns)
-indices = [i for i in dataset.index]  
+for model_name in models:
+    results_file = os.path.join(RESULTS_DIR, f"results_{model_name}.txt")
 
-# Pre-processing the data and targets
-data = dataset.iloc[:, 0:num_attributes-1].to_numpy()
-targets = dataset.iloc[:, num_attributes-1:]
-data = data_pre_processing(data)
-targets = targets_pre_processing(targets)
+    for dataset_id, dataset_name in enumerate(datasets):
+        if dataset_id == 0:
+            logger_mode = "w+"
+        else:
+            logger_mode = "a"
 
-# Generating the k-folds
-k = 10
-k_folds = k_fold_cross_validation(k, indices)   
+        # Getting the dataset and its infos
+        dataset_file = os.path.join(DATASETS_DIR, dataset_name+".csv")
+        dataset = pd.read_csv(dataset_file)             
+        num_attributes = len(dataset.columns)
+        indices = [i for i in dataset.index]  
 
-test_acc = []
-for i in range(k):
-    # Generating the training and test data and targets
-    X_train, y_train, X_test, y_test = split_data(k_folds, data, targets)
+        # Pre-processing the data and targets
+        X = dataset.iloc[:, 0:num_attributes-1].to_numpy()
+        X = data_pre_processing(X)
+        y = dataset.iloc[:, num_attributes-1:]
+        y = targets_pre_processing(y)
+    
+        # Generating the k-folds
+        num_folds = 10
+        k_folds = k_fold_cross_validation(num_folds, indices) 
 
-    # Training the model
-    model = train("knn", X_train, y_train)
+        with open(results_file, logger_mode) as logger:
+            logger.write(f"Dataset: {dataset_name}\n")
 
-    # Evaluating the model
-    acc = test(model, X_test, y_test)
-    test_acc.append(acc)
-
-# Gathering the model evaluations
-total_test_acc = np.mean(test_acc)
-print(f"\nTest Accuracy = {total_test_acc}")
+            scores = []
+            n_neighbors = [1,2,3,5,7,9,11,13,15]
+            for k in n_neighbors:
+                for i in range(num_folds):
+                    # Generating the training and test data and targets
+                    training_data, X_test, y_test = split_data(k_folds, X, y)
+                
+                    # Training and Testing
+                    preditions = k_nearest_neighbors(training_data, X_test, k)
+                    accuracy = get_accuracy(y_test, preditions)
+                    scores.append(accuracy)
+                logger.write('Accuracy (k = {}): {:.3f}%\n'.format(k, sum(scores)/float(len(scores))))
+            logger.write("\n\n")
