@@ -15,12 +15,11 @@ PARENT_PATH = os.path.dirname(__file__)
 DATASETS_DIR =  os.path.join(PARENT_PATH, "datasets")
 RESULTS_DIR = os.path.join(PARENT_PATH, "results")
 
-datasets = ["DATATRIEVE_transition", "KC2"]
-# models = ["knn", "weighted_knn", "adaptive_knn"]
-models = ["knn"]
+datasets = ["KC2", "DATATRIEVE_transition"]
+modes = ["knn", "weighted_knn"]
 
-for model_name in models:
-    results_file = os.path.join(RESULTS_DIR, f"results_{model_name}.txt")
+for mode in modes:
+    results_file = os.path.join(RESULTS_DIR, f"results_{mode}.txt")
 
     for dataset_id, dataset_name in enumerate(datasets):
         if dataset_id == 0:
@@ -55,7 +54,7 @@ for model_name in models:
                     training_data, X_test, y_test = split_data(k_folds, X, y)
                 
                     # Training and Testing
-                    preditions = k_nearest_neighbors(training_data, X_test, k)
+                    preditions = k_nearest_neighbors(training_data, X_test, k, mode)
                     accuracy = get_accuracy(y_test, preditions)
                     scores.append(accuracy)
                 logger.write('Accuracy (k = {}): {:.3f}%\n'.format(k, sum(scores)/float(len(scores))))

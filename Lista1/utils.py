@@ -46,10 +46,12 @@ def split_data(k_folds, data, targets):
 	return training_data, X_test, y_test
 
 def data_pre_processing(data):
+	# Ajusting the scale of the data attributes
 	scaler = StandardScaler()
 	return scaler.fit_transform(data) 
 
 def targets_pre_processing(targets):
+	# Transforming targets in one hot enconding labels
 	le = LabelEncoder()
 	enc = OneHotEncoder()
 
@@ -58,18 +60,11 @@ def targets_pre_processing(targets):
 	targets_enc = enc.transform(targets_le).toarray()
 	return targets_enc
 
-# def get_model(model, k):
-#     if model == "weighted_knn":
-#         # Assigns weights proportional to the inverse of the distance from the query point
-#         model = KNeighborsClassifier(n_neighbors=k, weights="distance")
-#     elif model == "adaptive_knn":
-#         model = RadiusNeighborsClassifier(radius=1.0)
-#     elif model == "knn": 
-#         # Uses uniform weights
-#         model = KNeighborsClassifier(n_neighbors=k)
-#     else:
-#         raise Exception("Model not implemented!")
-#     return model
+# def get_distance(mode, instance_1, instance_2):
+# 	distance = euclidean_distance(instance_1, instance_2)	# Default uses uniform weights
+# 	if mode == "weighted_knn":
+# 		distance = weighted_euclidean_distance(instance_1, instance_2)	# Assigns weights proportional to the inverse of the distance from the query point
+# 	return distance
 
 def euclidean_distance(instance_1, instance_2):
 	distance = 0.0
@@ -86,19 +81,22 @@ def get_neighbors(training_data, test_instance, n_neighbors):
 	distances.sort(key=lambda tup: tup[1])
 	neighbors = list()
 	for i in range(n_neighbors):
-		neighbors.append(distances[i][0])
+		neighbors.append(distances[i])
 	return neighbors
 
-def predict_classification(training_data, test_instance, n_neighbors):
+def predict_classification(training_data, test_instance, n_neighbors, mode):
 	neighbors = get_neighbors(training_data, test_instance, n_neighbors)
-	output_values = [np.argmax(training_data[i][1]) for i in neighbors]
-	prediction = max(set(output_values), key=output_values.count)
+	weights = None
+	output_values = [np.argmax(training_data[i[0]][1]) for i in neighbors]	# Getting the classes of the neighbors
+	if mode == "weighted_knn":
+		weights = [(1 / (i[1])**2) if i[1] != 0 else 1 for i in neighbors]	# Weight = 1 / (d(xq,xi)^2)
+	prediction = np.bincount(output_values,weights=weights).argmax()
 	return prediction
 
-def k_nearest_neighbors(training_data, X_test, n_neighbors):
+def k_nearest_neighbors(training_data, X_test, n_neighbors, mode):
 	predictions = list()
 	for test_instance in X_test:
-		output = predict_classification(training_data, test_instance, n_neighbors)
+		output = predict_classification(training_data, test_instance, n_neighbors, mode)
 		predictions.append(output)
 	return predictions
 

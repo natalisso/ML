@@ -1,15 +1,3 @@
-Dataset: DATATRIEVE_transition
-Accuracy (k = 1): 69.231%
-Accuracy (k = 2): 76.923%
-Accuracy (k = 3): 79.487%
-Accuracy (k = 5): 80.769%
-Accuracy (k = 7): 81.538%
-Accuracy (k = 9): 82.051%
-Accuracy (k = 11): 82.418%
-Accuracy (k = 13): 82.692%
-Accuracy (k = 15): 82.906%
-
-
 Dataset: KC2
 Accuracy (k = 1): 75.000%
 Accuracy (k = 2): 76.923%
@@ -20,5 +8,17 @@ Accuracy (k = 9): 80.128%
 Accuracy (k = 11): 80.769%
 Accuracy (k = 13): 80.769%
 Accuracy (k = 15): 80.556%
+
+
+Dataset: DATATRIEVE_transition
+Accuracy (k = 1): 69.231%
+Accuracy (k = 2): 76.923%
+Accuracy (k = 3): 79.487%
+Accuracy (k = 5): 80.769%
+Accuracy (k = 7): 81.538%
+Accuracy (k = 9): 82.051%
+Accuracy (k = 11): 82.418%
+Accuracy (k = 13): 82.692%
+Accuracy (k = 15): 82.906%
 
 
