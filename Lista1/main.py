@@ -27,7 +27,8 @@ for mode in modes:
         if dataset_id == 0:
             logger_mode = "w+"
 
-        with open(results_file, logger_mode) as logger:
+        with open("test.txt", logger_mode) as logger:
+            print(f"DATASET: {dataset_name}\n")
             logger.write(f"Dataset: {dataset_name}\n")
 
             # Getting the dataset and its infos
@@ -59,6 +60,11 @@ for mode in modes:
                     accuracy = get_accuracy(y_test, preditions)
                     scores.append(accuracy)
                 total_accuracy = sum(scores)/float(len(scores))
-                logger.write("Execution Time (k = {}): {} seconds\n".format(k, time.time() - start_time))
+                execution_time = time.time() - start_time
+                logger.write("Execution Time (k = {}): {} seconds\n".format(k, execution_time))
                 logger.write("Accuracy (k = {}): {:.3f}%\n".format(k, total_accuracy))
+                print("Execution Time (k = {}): {} seconds".format(k, execution_time))
+                print("Accuracy (k = {}): {:.3f}%\n".format(k, total_accuracy))
             logger.write("\n")
+            print()
+            
