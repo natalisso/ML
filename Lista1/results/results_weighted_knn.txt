@@ -1,23 +1,40 @@
 Dataset: DATATRIEVE_transition
+Execution Time (k = 1): 0.1422719955444336 seconds
 Accuracy (k = 1): 69.231%
+Execution Time (k = 2): 0.13887405395507812 seconds
 Accuracy (k = 2): 69.231%
+Execution Time (k = 3): 0.1419839859008789 seconds
 Accuracy (k = 3): 71.795%
+Execution Time (k = 5): 0.14174222946166992 seconds
 Accuracy (k = 5): 73.077%
+Execution Time (k = 7): 0.14261174201965332 seconds
 Accuracy (k = 7): 75.385%
+Execution Time (k = 9): 0.13352298736572266 seconds
 Accuracy (k = 9): 76.923%
+Execution Time (k = 11): 0.1423039436340332 seconds
 Accuracy (k = 11): 78.022%
+Execution Time (k = 13): 0.14197301864624023 seconds
 Accuracy (k = 13): 78.846%
+Execution Time (k = 15): 0.14145207405090332 seconds
 Accuracy (k = 15): 79.487%
 
 Dataset: KC2
+Execution Time (k = 1): 4.888459920883179 seconds
 Accuracy (k = 1): 75.000%
+Execution Time (k = 2): 4.934218883514404 seconds
 Accuracy (k = 2): 75.000%
+Execution Time (k = 3): 4.876002073287964 seconds
 Accuracy (k = 3): 75.641%
+Execution Time (k = 5): 4.981678247451782 seconds
 Accuracy (k = 5): 76.923%
+Execution Time (k = 7): 4.938403129577637 seconds
 Accuracy (k = 7): 77.692%
+Execution Time (k = 9): 4.84802508354187 seconds
 Accuracy (k = 9): 77.885%
+Execution Time (k = 11): 4.816279649734497 seconds
 Accuracy (k = 11): 78.022%
+Execution Time (k = 13): 4.7288079261779785 seconds
 Accuracy (k = 13): 78.125%
+Execution Time (k = 15): 4.8186681270599365 seconds
 Accuracy (k = 15): 77.991%
-
 
