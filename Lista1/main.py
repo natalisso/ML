@@ -15,8 +15,8 @@ PARENT_PATH = os.path.dirname(__file__)
 DATASETS_DIR =  os.path.join(PARENT_PATH, "datasets")
 RESULTS_DIR = os.path.join(PARENT_PATH, "results")
 
-datasets = ["KC2", "DATATRIEVE_transition"]
-modes = ["knn", "weighted_knn"]
+datasets = ["DATATRIEVE_transition", "KC2"]
+modes = ["knn", "weighted_knn", "adaptive_knn"]
 
 for mode in modes:
     results_file = os.path.join(RESULTS_DIR, f"results_{mode}.txt")
@@ -58,4 +58,4 @@ for mode in modes:
                     accuracy = get_accuracy(y_test, preditions)
                     scores.append(accuracy)
                 logger.write('Accuracy (k = {}): {:.3f}%\n'.format(k, sum(scores)/float(len(scores))))
-            logger.write("\n\n")
+            logger.write("\n")
