@@ -27,7 +27,7 @@ for mode in modes:
         if dataset_id == 0:
             logger_mode = "w+"
 
-        with open("test.txt", logger_mode) as logger:
+        with open(results_file, logger_mode) as logger:
             print(f"DATASET: {dataset_name}\n")
             logger.write(f"Dataset: {dataset_name}\n")
 
