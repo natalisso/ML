@@ -34,15 +34,14 @@ def k_fold_cross_validation(k, indices):
     return k_folds
 
 def split_data(k_folds, data, targets):
-	for i in range(len(k_folds)):
-		# Separating the training data and targets
-		training_indices = [j for j in k_folds[i][0]]
-		training_data = [(data[i],targets[i])  for i in training_indices]
+	# Separating the training data and targets
+	training_indices = [j for j in k_folds[0]]
+	training_data = [(data[i],targets[i]) for i in training_indices]
 
-		# Separating the test data from their target attribute
-		test_indices = [j for j in k_folds[i][1]]
-		X_test = [data[i] for i in test_indices]
-		y_test = [np.argmax(targets[i]) for i in test_indices]
+	# Separating the test data from their target attribute
+	test_indices = [j for j in k_folds[1]]
+	X_test = [data[i] for i in test_indices]
+	y_test = [np.argmax(targets[i]) for i in test_indices]
 	return training_data, X_test, y_test
 
 def data_pre_processing(data):

@@ -47,24 +47,31 @@ for mode in modes:
             num_folds = 10
             k_folds = k_fold_cross_validation(num_folds, indices) 
 
+            y_acctual = []
+            y_pred = []
             scores = []
             n_neighbors = [1,2,3,5,7,9,11,13,15]
             for k in n_neighbors:
+                print("k =", k)
                 start_time = time.time()
                 for i in range(num_folds):
                     # Generating the training and test data and targets
-                    training_data, X_test, y_test = split_data(k_folds, X, y)
-                
+                    training_data, X_test, y_test = split_data(k_folds[i], X, y)
+  
                     # Training and Testing
                     preditions = k_nearest_neighbors(training_data, X_test, k, mode)
+  
+                    y_acctual.extend(y_test)
+                    y_pred.extend(preditions)
                     accuracy = get_accuracy(y_test, preditions)
                     scores.append(accuracy)
-                total_accuracy = sum(scores)/float(len(scores))
                 execution_time = time.time() - start_time
                 logger.write("Execution Time (k = {}): {} seconds\n".format(k, execution_time))
+                total_accuracy = sum(scores)/float(len(scores))
                 logger.write("Accuracy (k = {}): {:.3f}%\n".format(k, total_accuracy))
                 print("Execution Time (k = {}): {} seconds".format(k, execution_time))
                 print("Accuracy (k = {}): {:.3f}%\n".format(k, total_accuracy))
-            logger.write("\n")
+            logger.write("y_actual = "+str(y_acctual)+"\n")
+            logger.write("y_pred = "+str(y_pred)+"\n\n")
             print()
             
