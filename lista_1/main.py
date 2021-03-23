@@ -2,19 +2,23 @@ import os
 import pandas as pd
 import numpy as np
 import time 
+import sys
+
+from knn import k_nearest_neighbors
 from utils import(
     data_pre_processing,
     targets_pre_processing,
     k_fold_cross_validation,
     split_data,
-    k_nearest_neighbors,
     get_accuracy
 )
 
 
 PARENT_PATH = os.path.dirname(__file__)
-DATASETS_DIR =  os.path.join(PARENT_PATH, "datasets")
+ROOT_PATH = os.path.abspath(os.path.join(PARENT_PATH, os.pardir))
+DATASETS_DIR =  os.path.join(ROOT_PATH, "datasets")
 RESULTS_DIR = os.path.join(PARENT_PATH, "results")
+
 
 datasets = ["DATATRIEVE_transition", "KC2"]
 modes = ["knn", "weighted_knn", "adaptive_knn"]

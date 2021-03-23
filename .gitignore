@@ -1,2 +1,4 @@
 .vscode
-Lista1/__pycache__
+.DS_Store
+**/results/
+**/__pycache__/

@@ -11,37 +11,49 @@
 
 * Algoritmo de Cálculo da Distância: **Distância Euclidiana**
 
-* Datasets: 
-    * Título/Tópico: **DATATRIEVE Transition/Software defect prediction (version 6.1)**
-        * Doador: Guenther Ruhe (ruhe@ucalgary.ca)
-        * Data: Janeiro 15, 2005
-        * Número de Instâncias: 130
-        * Número de Atributos: 
-            * 8 atributos condicionais
-            * 1 atributo decisor
-        * Número de Valores NULL: 0
-        * Número de Classes: 2 ({0,1})
-        * Distribuição das Classes:
-            * Classe 0: 119 instâncias (91.54%)
-            * Classe 1: 11  instâncias (8.46%)
-        * Fontes:
-            * Criadores:
+## Lista 2
+
+* Algoritmos de Seleção de Protótipos: **LVQ1**, **LVQ2.1** e **LVQ3**
+    * variações utilizadas:
+        * número de protótipos = {5,10,15}
+
+* Algoritmo de Aprendizagem: **Classificador k-NN**
+    * k = {1,3}
+
+* Algoritmo de Cálculo da Distância: **Distância Euclidiana**
+
+# Datasets 
+
+* Título/Tópico: **DATATRIEVE Transition/Software defect prediction (version 6.1)**
+    * Doador: Guenther Ruhe (ruhe@ucalgary.ca)
+    * Data: Janeiro 15, 2005
+    * Número de Instâncias: 130
+    * Número de Atributos: 
+        * 8 atributos condicionais
+        * 1 atributo decisor
+    * Número de Valores NULL: 0
+    * Número de Classes: 2 ({0,1})
+    * Distribuição das Classes:
+        * Classe 0: 119 instâncias (91.54%)
+        * Classe 1: 11  instâncias (8.46%)
+    * Fontes:
+        * Criadores:
 DATATRIEVETM project carried out at Digital Engineering Italy
 
-    * Título/Tópico: **KC2/Software defect prediction**
-        * Doador: Tim Menzies (tim@barmag.net)
-        * Data: December 2, 2004
-        * Número de Instâncias: 522
-        * Número de Atributos: 
-            * 21 atributos condicionais
-            * 1 atributo decisor
-        * Número de Valores NULL: 0
-        * Número de Classes: 2 ({yes,no})
-        * Distribuição das Classes:
-            * Classe yes: 150 instâncias (20.5%)
-            * Classe no: 415  instâncias (79.5%)
-        * Fontes:
-            * Criadores:
+* Título/Tópico: **KC2/Software defect prediction**
+    * Doador: Tim Menzies (tim@barmag.net)
+    * Data: December 2, 2004
+    * Número de Instâncias: 522
+    * Número de Atributos: 
+        * 21 atributos condicionais
+        * 1 atributo decisor
+    * Número de Valores NULL: 0
+    * Número de Classes: 2 ({yes,no})
+    * Distribuição das Classes:
+        * Classe yes: 150 instâncias (20.5%)
+        * Classe no: 415  instâncias (79.5%)
+    * Fontes:
+        * Criadores:
 NASA, then the NASA Metrics Data Program,
 http://mdp.ivv.nasa.gov.
 
