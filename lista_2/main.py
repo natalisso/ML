@@ -8,7 +8,7 @@ from LVQ import train_codebooks
 PARENT_PATH = os.path.dirname(__file__)
 ROOT_PATH = os.path.abspath(os.path.join(PARENT_PATH, os.pardir))
 DATASETS_DIR =  os.path.join(ROOT_PATH, "datasets")
-RESULTS_DIR = os.path.join(PARENT_PATH, "results/LVQ2")
+RESULTS_DIR = os.path.join(PARENT_PATH, "results/LVQ3")
 SEED = 2
 
 sys.path.insert(1, ROOT_PATH)
@@ -24,6 +24,7 @@ n_folds = 5
 learn_rate = 0.2
 n_epochs = 1000
 w = 0.3
+epsilon = 0.05
 all_n_codebooks = [5, 10, 15]
 all_n_neighbors = [1, 3]
 
@@ -52,7 +53,7 @@ for dataset_id, dataset_name in enumerate(datasets):
 
             # Getting cookbooks vectors - LVQ1 + LVQ2.1
             data_LVQ1 = train_codebooks(raw_data, n_codebooks, learn_rate, n_epochs)
-            new_data = train_codebooks(data_LVQ1, n_codebooks, learn_rate, n_epochs, version="2.1", w=w)
+            new_data = train_codebooks(data_LVQ1, n_codebooks, learn_rate, n_epochs, version="3", w=w, epsilon=epsilon)
 
             # Gettig the k folds from the new training data
             folds = cross_validation_split(new_data, n_folds)

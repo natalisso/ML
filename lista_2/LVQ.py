@@ -25,7 +25,7 @@ def get_best_matching_unit(codebooks, test_instance, version):
 		if dist != 0.0:
 			distances.append((codebook, dist))
 	distances.sort(key=lambda tup: tup[1])
-	if version == "2.1":
+	if version != "1":
 		return [distances[0], distances[1]]
 	return distances[0][0]
 
@@ -44,7 +44,7 @@ def choose_codebooks(training_data, n_codebooks):
 	codebooks = codebooks_0 + codebooks_1
 	return codebooks
 
-def train_codebooks(training_data, n_codebooks, lrate, epochs, version="1", w=0):
+def train_codebooks(training_data, n_codebooks, lrate, epochs, version="1", w=0, epsilon=0):
 	codebooks = choose_codebooks(training_data, n_codebooks)
 
 	for epoch in range(epochs):
@@ -61,7 +61,7 @@ def train_codebooks(training_data, n_codebooks, lrate, epochs, version="1", w=0)
 						bmu[i] += rate * (row[i] - bmu[i])
 					else:
 						bmu[i] -= rate * (row[i] - bmu[i])
-				elif version == "2.1":
+				else:
 					if is_inside_window(bmu[0][1], bmu[1][1], w):
 						# If the 2-NN elements are from different classes
 						if bmu[0][0][-1] != bmu[1][0][-1]:
@@ -71,4 +71,9 @@ def train_codebooks(training_data, n_codebooks, lrate, epochs, version="1", w=0)
 							else:
 								bmu[0][0][i] -= rate * (row[i] - bmu[0][0][i])
 								bmu[1][0][i] += rate * (row[i] - bmu[1][0][i])
+						else:
+							if version == "3":
+								if bmu[0][0][-1] == row[-1]:
+									bmu[0][0][i] += epsilon * rate * (row[i] - bmu[0][0][i])
+									bmu[1][0][i] += epsilon * rate * (row[i] - bmu[1][0][i])
 	return codebooks
