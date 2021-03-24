@@ -11,13 +11,22 @@ random.seed(SEED)
 sys.path.insert(1, ROOT_PATH)
 from models.knn import euclidean_distance
 
+def is_inside_window(d_i, d_j, w):
+	s = (1 - w) / (1 + w)
 
-def get_best_matching_unit(codebooks, test_instance):
+	if min((d_i / d_j), (d_j / d_i)) > s:
+		return True
+	return False
+
+def get_best_matching_unit(codebooks, test_instance, version):
 	distances = list()
 	for codebook in codebooks:
 		dist = euclidean_distance(codebook, test_instance)
-		distances.append((codebook, dist))
+		if dist != 0.0:
+			distances.append((codebook, dist))
 	distances.sort(key=lambda tup: tup[1])
+	if version == "2.1":
+		return [distances[0], distances[1]]
 	return distances[0][0]
 
 def choose_codebooks(training_data, n_codebooks):
@@ -35,20 +44,31 @@ def choose_codebooks(training_data, n_codebooks):
 	codebooks = codebooks_0 + codebooks_1
 	return codebooks
 
-def train_codebooks(training_data, n_codebooks, lrate, epochs, version="1"):
+def train_codebooks(training_data, n_codebooks, lrate, epochs, version="1", w=0):
 	codebooks = choose_codebooks(training_data, n_codebooks)
 
 	for epoch in range(epochs):
 		rate = lrate * math.exp(-epoch / 200)
 		print("Epoch %d: rate=%.3f" % (epoch, rate))
 		for row in training_data:
-			# 1-NN of row over codebooks
-			bmu = get_best_matching_unit(codebooks, row)
+			# Get the 1-NN or 2-NN from row over codebooks
+			bmu = get_best_matching_unit(codebooks, row, version)
 
 			for i in range(len(row)-1):
-				# If they are from different classes
-				if bmu[-1] == row[-1]:
-					bmu[i] += rate * (row[i] - bmu[i])
-				else:
-					bmu[i] -= rate * (row[i] - bmu[i])
+				if version == "1":
+					# If they are not from different classes
+					if bmu[-1] == row[-1]:
+						bmu[i] += rate * (row[i] - bmu[i])
+					else:
+						bmu[i] -= rate * (row[i] - bmu[i])
+				elif version == "2.1":
+					if is_inside_window(bmu[0][1], bmu[1][1], w):
+						# If the 2-NN elements are from different classes
+						if bmu[0][0][-1] != bmu[1][0][-1]:
+							if bmu[0][0][-1] == row[-1]:
+								bmu[0][0][i] += rate * (row[i] - bmu[0][0][i])
+								bmu[1][0][i] -= rate * (row[i] - bmu[1][0][i])
+							else:
+								bmu[0][0][i] -= rate * (row[i] - bmu[0][0][i])
+								bmu[1][0][i] += rate * (row[i] - bmu[1][0][i])
 	return codebooks

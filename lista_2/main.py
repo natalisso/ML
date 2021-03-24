@@ -8,7 +8,7 @@ from LVQ import train_codebooks
 PARENT_PATH = os.path.dirname(__file__)
 ROOT_PATH = os.path.abspath(os.path.join(PARENT_PATH, os.pardir))
 DATASETS_DIR =  os.path.join(ROOT_PATH, "datasets")
-RESULTS_DIR = os.path.join(PARENT_PATH, "results/LVQ1")
+RESULTS_DIR = os.path.join(PARENT_PATH, "results/LVQ2")
 SEED = 2
 
 sys.path.insert(1, ROOT_PATH)
@@ -23,6 +23,7 @@ datasets = ["DATATRIEVE_transition", "KC2"]
 n_folds = 5
 learn_rate = 0.2
 n_epochs = 1000
+w = 0.3
 all_n_codebooks = [5, 10, 15]
 all_n_neighbors = [1, 3]
 
@@ -39,7 +40,6 @@ for dataset_id, dataset_name in enumerate(datasets):
             dataset_file = os.path.join(DATASETS_DIR, dataset_name+".csv")
             dataset = pd.read_csv(dataset_file)             
             num_attributes = len(dataset.columns)
-            # indices = [i for i in dataset.index]
 
             # Getting and processing the data and targets
             X = dataset.iloc[:, 0:num_attributes-1].to_numpy()
@@ -50,10 +50,11 @@ for dataset_id, dataset_name in enumerate(datasets):
             # Gettig the k folds from all the data
             raw_data = [data + target for data, target in zip(X,y)]
 
-            # Getting cookbooks vectors
-            new_data = train_codebooks(raw_data, n_codebooks, learn_rate, n_epochs)
+            # Getting cookbooks vectors - LVQ1 + LVQ2.1
+            data_LVQ1 = train_codebooks(raw_data, n_codebooks, learn_rate, n_epochs)
+            new_data = train_codebooks(data_LVQ1, n_codebooks, learn_rate, n_epochs, version="2.1", w=w)
 
-            # # Gettig the k folds from the new training data
+            # Gettig the k folds from the new training data
             folds = cross_validation_split(new_data, n_folds)
 
             scores = []
