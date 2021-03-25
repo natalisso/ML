@@ -46,9 +46,11 @@ def choose_codebooks(training_data, n_codebooks):
 
 def train_codebooks(training_data, n_codebooks, lrate, epochs, version="1", w=0, epsilon=0):
 	codebooks = choose_codebooks(training_data, n_codebooks)
+	rate = lrate
+	decay = rate / epochs
 
 	for epoch in range(epochs):
-		rate = lrate * math.exp(-epoch / 200)
+		rate *= (1. / (1. + decay * epoch))
 		print("Epoch %d: rate=%.3f" % (epoch, rate))
 		for row in training_data:
 			# Get the 1-NN or 2-NN from row over codebooks
