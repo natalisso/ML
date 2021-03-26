@@ -50,7 +50,7 @@ DATATRIEVETM project carried out at Digital Engineering Italy
     * Número de Valores NULL: 0
     * Número de Classes: 2 ({yes,no})
     * Distribuição das Classes:
-        * Classe yes: 150 instâncias (20.5%)
+        * Classe yes: 107 instâncias (20.5%)
         * Classe no: 415  instâncias (79.5%)
     * Fontes:
         * Criadores:
