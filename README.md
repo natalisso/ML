@@ -57,4 +57,38 @@ DATATRIEVETM project carried out at Digital Engineering Italy
 NASA, then the NASA Metrics Data Program,
 http://mdp.ivv.nasa.gov.
 
+* Título/Tópico: **PC1/Software defect prediction**
+    * Doador: Tim Menzies (tim@barmag.net)
+    * Data: December 2, 2004
+    * Número de Instâncias: 1109
+    * Número de Atributos: 
+        * 21 atributos condicionais
+        * 1 atributo decisor
+    * Número de Valores NULL: 0
+    * Número de Classes: 2 ({false,true})
+    * Distribuição das Classes:
+        * Classe false: 77 instâncias (6.94%)
+        * Classe true: 1032  instâncias (93.05%)
+    * Fontes:
+        * Criadores:
+NASA, then the NASA Metrics Data Program,
+http://mdp.ivv.nasa.gov.
+
+* Título/Tópico: **CM1/Software defect prediction**
+    * Doador: Tim Menzies (tim@barmag.net)
+    * Data: December 2, 2004
+    * Número de Instâncias: 498
+    * Número de Atributos: 
+        * 21 atributos condicionais
+        * 1 atributo decisor
+    * Número de Valores NULL: 0
+    * Número de Classes: 2 ({false,true})
+    * Distribuição das Classes:
+        * Classe false: 449 instâncias (90.16%)
+        * Classe true: 49  instâncias (9.83%)
+    * Fontes:
+        * Criadores:
+NASA, then the NASA Metrics Data Program,
+http://mdp.ivv.nasa.gov.
+
 **OBS:** Os datasets utilizados são públicos e foram retirados do "Promise Software Engineering Repository" (http://promise.site.uottawa.ca/SERepository/datasets-page.html). Para a seleção das amostras de treino e teste, foi utilizado o método k-fold cross-validation com k = 10.
