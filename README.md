@@ -67,8 +67,8 @@ http://mdp.ivv.nasa.gov.
     * Número de Valores NULL: 0
     * Número de Classes: 2 ({false,true})
     * Distribuição das Classes:
-        * Classe false: 77 instâncias (6.94%)
-        * Classe true: 1032  instâncias (93.05%)
+        * Classe true: 77 instâncias (6.94%)
+        * Classe false: 1032  instâncias (93.05%)
     * Fontes:
         * Criadores:
 NASA, then the NASA Metrics Data Program,
