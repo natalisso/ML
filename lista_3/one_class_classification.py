@@ -1,13 +1,10 @@
 import os
 import sys
 import pandas as pd
-
+from statistics import mean
 from sklearn.ensemble import IsolationForest
 from sklearn.svm import OneClassSVM
-from sklearn.covariance import EllipticEnvelope
-from sklearn.metrics import f1_score, roc_curve, auc
-import matplotlib.pyplot as plt
-from sklearn.model_selection import train_test_split
+from sklearn.metrics import f1_score
 
 PARENT_PATH = os.path.dirname(__file__)
 ROOT_PATH = os.path.abspath(os.path.join(PARENT_PATH, os.pardir))
@@ -20,52 +17,83 @@ sys.path.insert(1, ROOT_PATH)
 from utils.metrics import get_evaluation_metrics
 from utils.data_processing import data_pre_processing, targets_pre_processing, train_test_custom_split
 
-# Get the raw dataset
-dataset_name = "PC1"
-dataset_file = os.path.join(DATASETS_DIR, dataset_name+".csv")
-dataset = pd.read_csv(dataset_file) 
-num_attributes = len(dataset.columns)
+datasets_params = {"DATATRIEVE_transition": 0.0864,
+                   "KC2": 0.205,
+                   "PC1": 0.0694,
+                   "CM1": 0.0983
+                  }
 
-# Get and process the data and targets
-X = dataset.iloc[:, 0:num_attributes-1].to_numpy()
-y = dataset.iloc[:, num_attributes-1:]
-X = data_pre_processing(X)
-y = targets_pre_processing(y)
-data = [data + target for data, target in zip(X,y)]
-
-# print(y)
-majority = len(dataset[dataset['defects'] == 0])
-minority = len(dataset[dataset['defects'] == 1])
-
-print(majority, minority)
-
-majority_target = 0
-minority_target = 1
-minority_percentage = 0.0694
-train_percentage = 0.5
-
-train_X, test_X, train_y, test_y = train_test_custom_split(data, train_percentage, majority_target)
-
-# Define the model
-model = OneClassSVM(gamma='scale', nu=0.0846)
-# model = EllipticEnvelope(contamination=0.0846, random_state=SEED)
-# model = IsolationForest(contamination=minority_percentage, random_state=SEED)
-
-# Train on majority class
-model.fit(train_X)
-
-# Test the model
-predictions = model.predict(test_X)
+for dataset_name, minority_percentage in zip(datasets_params.keys(), datasets_params.values()):               
+    results_dir = os.path.join(RESULTS_DIR, dataset_name)
+    results_filename = os.path.join(results_dir, f"results_1_model.txt")
 
 
-# Transform inliers 1 and outliers -1 predictions into original targets
-predictions = [majority_target if target == 1 else minority_target for target in predictions]
+    # Get the raw dataset
+    dataset_file = os.path.join(DATASETS_DIR, dataset_name+".csv")
+    dataset = pd.read_csv(dataset_file) 
+    num_attributes = len(dataset.columns)
 
-# Evaluate the model
-score = f1_score(test_y, predictions, pos_label=minority_target)
-print('F1 Score: %.3f' % score)
-evaluation_metrics = get_evaluation_metrics(test_y, predictions, pos_label=minority_target)
-print('F1 Score: %.3f' % evaluation_metrics["f1_measure"])
-print('Recall: %.3f' % evaluation_metrics["recall"])
-print('Precision: %.3f' % evaluation_metrics["precision"])
-print(evaluation_metrics["true_positives"],evaluation_metrics["false_positives"],evaluation_metrics["true_negatives"],evaluation_metrics["false_negatives"])
+    # Get and process the data and targets
+    X = dataset.iloc[:, 0:num_attributes-1].to_numpy()
+    y = dataset.iloc[:, num_attributes-1:]
+    X = data_pre_processing(X)
+    y = targets_pre_processing(y)
+    data = [data + target for data, target in zip(X,y)]
+
+    majority_target = 0 # normal -> without bugs
+    minority_target = 1 # anomalous -> with bugs
+
+    with open(results_filename, "w+") as results_file:
+
+        for train_percentage in [0.3, 0.4, 0.5]:
+        
+            train_X, test_X, train_y, test_y = train_test_custom_split(data, train_percentage, majority_target)
+
+            # Define the models
+            models = [OneClassSVM(kernel='rbf', gamma=0.001, nu=0.25).fit(train_X)
+                    # ,OneClassSVM(kernel='rbf', gamma=0.001, nu=0.5).fit(train_X)
+                    # ,OneClassSVM(kernel='rbf', gamma=0.001, nu=0.95).fit(train_X)
+                    # ,IsolationForest(contamination=minority_percentage, random_state=SEED).fit(train_X)
+                    ]
+
+            # Make predictions
+            models_predictions = [[pred1] for pred1 in 
+                                    models[0].predict(test_X)]
+
+            predictions = []
+            for prediction in models_predictions:
+                prediction = [1 if pred == -1 else 0 for pred in prediction]
+                pred = mean(prediction)
+
+                if abs(pred - 0) <= abs(pred - 1):
+                    predictions.append(0)
+                else:
+                    predictions.append(1)
+
+            # Evaluate the model
+            TP = FN = FP = TN = 0
+            for i in range(len(test_y)):
+                if test_y[i] == 1 and predictions[i] == 1:
+                    TP = TP+1
+                elif test_y[i] == 1 and predictions[i] == 0:
+                    FN = FN+1
+                elif test_y[i] == 0 and predictions[i] == 1:
+                    FP = FP+1
+                else:
+                    TN = TN +1
+
+            print(TP, FN, FP, TN)
+            accuracy = (TP+TN)/(TP+FN+FP+TN)
+            print(accuracy)
+            sensitivity = TP/(TP+FN)
+            print(sensitivity)
+            specificity = TN/(TN+FP)
+            print(specificity)
+
+
+            evaluation_metrics = get_evaluation_metrics(test_y, predictions, pos_label=1)
+            results_file.write('P = %.2f\n' % train_percentage)
+            results_file.write('F1 Score: %.3f\n' % evaluation_metrics["f1_measure"])
+            results_file.write('Recall: %.3f\n' % evaluation_metrics["recall"])
+            results_file.write('Precision: %.3f\n' % evaluation_metrics["precision"])
+            results_file.write('TP: %d,  FN: %d,  FP: %d,  TN: %d\n\n' % (TP,FN,FP,TN))
