@@ -25,7 +25,7 @@ datasets_params = {"DATATRIEVE_transition": 0.0864,
 
 for dataset_name, minority_percentage in zip(datasets_params.keys(), datasets_params.values()):               
     results_dir = os.path.join(RESULTS_DIR, dataset_name)
-    results_filename = os.path.join(results_dir, f"results_1_model.txt")
+    results_filename = os.path.join(results_dir, f"results_3_models.txt")
 
 
     # Get the raw dataset
@@ -52,13 +52,13 @@ for dataset_name, minority_percentage in zip(datasets_params.keys(), datasets_pa
             # Define the models
             models = [OneClassSVM(kernel='rbf', gamma=0.001, nu=0.25).fit(train_X)
                     # ,OneClassSVM(kernel='rbf', gamma=0.001, nu=0.5).fit(train_X)
-                    # ,OneClassSVM(kernel='rbf', gamma=0.001, nu=0.95).fit(train_X)
-                    # ,IsolationForest(contamination=minority_percentage, random_state=SEED).fit(train_X)
+                    ,OneClassSVM(kernel='rbf', gamma=0.001, nu=0.95).fit(train_X)
+                    ,IsolationForest(contamination=minority_percentage, random_state=SEED).fit(train_X)
                     ]
 
             # Make predictions
-            models_predictions = [[pred1] for pred1 in 
-                                    models[0].predict(test_X)]
+            models_predictions = [[pred1,pred2,pred3] for pred1,pred2,pred3 in 
+                                    zip(models[0].predict(test_X),models[1].predict(test_X),models[2].predict(test_X))]
 
             predictions = []
             for prediction in models_predictions:
@@ -82,17 +82,22 @@ for dataset_name, minority_percentage in zip(datasets_params.keys(), datasets_pa
                 else:
                     TN = TN +1
 
-            print(TP, FN, FP, TN)
             accuracy = (TP+TN)/(TP+FN+FP+TN)
-            print(accuracy)
             sensitivity = TP/(TP+FN)
-            print(sensitivity)
             specificity = TN/(TN+FP)
-            print(specificity)
+            # print(TP, FN, FP, TN)
+            # print(accuracy)
+            # print(sensitivity)
+            # print(specificity)
 
 
             evaluation_metrics = get_evaluation_metrics(test_y, predictions, pos_label=1)
             results_file.write('P = %.2f\n' % train_percentage)
+            results_file.write('Accuracy: %.3f\n' % evaluation_metrics["accuracy"])
+            results_file.write('Sensitivity (TPR): %.3f\n' % sensitivity)
+            results_file.write('False Alarms (FPR): %.3f\n' % (1 - specificity))
+            results_file.write('Miss Rate (FNR): %.3f\n' % (FN/(FN+TP)))
+            results_file.write('Specificity (TNR): %.3f\n' % specificity)
             results_file.write('F1 Score: %.3f\n' % evaluation_metrics["f1_measure"])
             results_file.write('Recall: %.3f\n' % evaluation_metrics["recall"])
             results_file.write('Precision: %.3f\n' % evaluation_metrics["precision"])

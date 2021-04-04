@@ -22,6 +22,20 @@
 
 * Algoritmo de Cálculo da Distância: **Distância Euclidiana**
 
+## Lista 3
+
+* Problema Proposto: **Bug Detector System Trained on the Majority Class only**
+
+* Solução Desenvolvida: **Ensembles for One-class Classification**
+
+    * Algoritmos de Aprendizagem:
+        * **One Class Classifier SVM**
+            * kernel = rbf
+            * gamma = 0.001
+            * nu = {0.25, 0.5, 0.95}
+        * **Isolation Forest**
+            * contamination = % of the minority class
+
 # Datasets 
 
 * Título/Tópico: **DATATRIEVE Transition/Software defect prediction (version 6.1)**
