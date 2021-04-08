@@ -36,6 +36,19 @@
         * **Isolation Forest**
             * contamination = % of the minority class
 
+## Lista 4
+
+* Algoritmos de Aprendizagem:
+    * **k-NN** 
+        * k = 1
+    * **Naive Bayes**
+        * sem agrupamento
+        * com agrupamento
+
+* Algoritmo de Agrupamento: **k-Means**
+    * k = {2,3,4,5,6}
+
+
 # Datasets 
 
 * Título/Tópico: **DATATRIEVE Transition/Software defect prediction (version 6.1)**
