@@ -36,7 +36,7 @@ for dataset_name, minority_percentage in zip(datasets_params.keys(), datasets_pa
     # Get and process the data and targets
     X = dataset.iloc[:, 0:num_attributes-1].to_numpy()
     y = dataset.iloc[:, num_attributes-1:]
-    X = data_pre_processing(X)
+    X = data_pre_processing(X,'power')
     y = targets_pre_processing(y)
     data = [data + target for data, target in zip(X,y)]
 

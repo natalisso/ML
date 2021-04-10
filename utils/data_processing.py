@@ -7,9 +7,14 @@ from random import seed
 SEED = 2 
 
 
-def data_pre_processing(data):
+def data_pre_processing(data, transormation='standard'):
+    # Initializing the scaler
+    if transormation == 'power':
+        scaler = PowerTransformer() 
+    else:
+        scaler = StandardScaler()
+
     # Ajusting the scale of the data attributes
-    scaler = PowerTransformer()
     scaled_data = scaler.fit_transform(data).tolist()
     return scaled_data
 
