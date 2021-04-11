@@ -39,7 +39,6 @@ def get_kstar(features, class_label=None, dataset_name=None, n_fold=None):
     sse_values = []
     silhouette_coefficients = []
     results_dir = os.path.join(RESULTS_DIR, dataset_name)
-    print("results_dir =", results_dir)
 
     for k in k_values:
         kmeans = KMeans(n_clusters=k
@@ -59,7 +58,7 @@ def get_kstar(features, class_label=None, dataset_name=None, n_fold=None):
         score = silhouette_score(features, preds)
         silhouette_coefficients.append(score)
         
-    # The Elbow Method
+    # Select the best k using the Elbow Method
     kl = KneeLocator(k_values, sse_values, curve="convex", direction="decreasing")
     k_elbow = kl.elbow
     filename = os.path.join(results_dir, f"{dataset_name}_elbow_{class_label}_fold{n_fold}.png")
@@ -71,14 +70,14 @@ def get_kstar(features, class_label=None, dataset_name=None, n_fold=None):
               title="SSE por Número de Clusters",
               subtitle="Classe %d" % class_label)
     
-    # The Silhouette Method
+    # Validate the best k using the Silhouette Method
     if k_elbow is not None:
         k_star = k_elbow
     else:
         k_star = 3
+    
+    k_star = silhouette_coefficients.index(max(silhouette_coefficients[k_star - 2:])) + 2
 
-    if silhouette_coefficients[k_star - 2] < silhouette_coefficients[k_star - 1]:
-        k_star = k_star + 1
     filename = os.path.join(results_dir, f"{dataset_name}_silhouette_{class_label}_fold{n_fold}.png")
     save_plot(x_values=k_values,
               y_values=silhouette_coefficients,
@@ -91,13 +90,15 @@ def get_kstar(features, class_label=None, dataset_name=None, n_fold=None):
     return k_star
 
 def generate_kstar_clusters(features, class_label, dataset_name=None, n_fold=None):
+    # Get the best k
     k_star = get_kstar(features, class_label, dataset_name, n_fold)
+    
+    # Apply the K-Means algotihm to generate the k_star clusters
     kmeans = KMeans(n_clusters=k_star
                     ,init='k-means++'
                     ,n_init=10
                     ,max_iter=300
                     ,random_state=42)
-        
     kmeans.fit(features)
     y_new = kmeans.labels_
 
