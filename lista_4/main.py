@@ -5,7 +5,7 @@ import numpy as np
 from sklearn.model_selection import StratifiedKFold
 from sklearn.naive_bayes import GaussianNB
 from sklearn.neighbors import KNeighborsClassifier
-from sklearn.metrics import f1_score, classification_report
+from sklearn.metrics import f1_score, classification_report, confusion_matrix
 from statistics import mean, stdev
 from clustering import generate_kstar_clusters
 
@@ -18,7 +18,7 @@ SEED = 2
 sys.path.insert(1, ROOT_PATH)
 from utils.data_processing import data_pre_processing
 
-datasets = ["DATATRIEVE_transition", "KC2", "PC1", "CM1"]
+datasets = ["DATATRIEVE_transition", "CM1"]
 target_names = ['class 0', 'class 1']
 
 
@@ -36,7 +36,6 @@ def get_dataset(dataset_name):
 
 
 for dataset_name in datasets:     
-    print(dataset_name)  
     # Initializing results file        
     results_dir = os.path.join(RESULTS_DIR, dataset_name)
     results_filename = os.path.join(results_dir, f"results_clustering.txt")
@@ -53,10 +52,12 @@ for dataset_name in datasets:
     # Train and test the data on each folder
     with open(results_filename, 'a') as results_file:
         n_fold = 0
-        results = {"1-NN":[], "NB": [], "NB Clustered": []}
+        results = {"1-NN": {"f1": [], "tpr": [], "fpr": []},
+                   "NB": {"f1": [], "tpr": [], "fpr": []},
+                   "NB Clustered": {"f1": [], "tpr": [], "fpr": []}
+                  }
 
         for train_index, test_index in folds:
-
             results_file.write("Fold %d:\n" % (n_fold+1))
             X_train = np.array(X)[train_index.astype(int)]
             X_test = np.array(X)[test_index.astype(int)]
@@ -70,8 +71,10 @@ for dataset_name in datasets:
             knn_results = classification_report(y_test, knn_preds, target_names=target_names)
             results_file.write(f" 1-NN:\n{knn_results}\n") 
             results_file.write(f"knn_preds = {knn_preds}\n")
-            results["1-NN"].append(f1_score(y_test, knn_preds))           
-
+            results["1-NN"]["f1"].append(f1_score(y_test, knn_preds))   
+            tn, fp, fn, tp = confusion_matrix(y_test, knn_preds).ravel()
+            results["1-NN"]["tpr"].append(tp / (tp + fn))    
+            results["1-NN"]["fpr"].append(fp / (fp + tn))   
 
             # Naive Bayes
             nb = GaussianNB()
@@ -80,9 +83,11 @@ for dataset_name in datasets:
             nb_results = classification_report(y_test, nb_preds, target_names=target_names)
             results_file.write(f" Naive Bayes:\n{nb_results}\n")
             results_file.write(f"nb_preds = {nb_preds}\n")
-            results["NB"].append(f1_score(y_test, nb_preds))
+            results["NB"]["f1"].append(f1_score(y_test, nb_preds))
+            tn, fp, fn, tp = confusion_matrix(y_test, nb_preds).ravel()
+            results["NB"]["tpr"].append(tp / (tp + fn))    
+            results["NB"]["fpr"].append(fp / (fp + tn))
         
-
             # Naive Bayes (with clustering)
             results_file.write(f" Naive Bayes (with clustering):\n")
             old_k_star = 0
@@ -92,7 +97,6 @@ for dataset_name in datasets:
 
             # Select and generate the best k clusters for each class in the training set
             for i in range(2):
-
                 features = [row for row,label in zip(X_train, y_train) if label == i]
                 k_star, y_train_new = generate_kstar_clusters(features, i, dataset_name, n_fold)
                 
@@ -114,15 +118,22 @@ for dataset_name in datasets:
             results_file.write(f"nb_clustered_preds = {mapped_nb_preds}\n")
             nb_clustered_results = classification_report(y_test, mapped_nb_preds, target_names=target_names)
             results_file.write(f" {nb_clustered_results}\n\n")
-            results["NB Clustered"].append(f1_score(y_test, mapped_nb_preds))
+            results["NB Clustered"]["f1"].append(f1_score(y_test, mapped_nb_preds))
+            tn, fp, fn, tp = confusion_matrix(y_test, mapped_nb_preds).ravel()
+            results["NB Clustered"]["tpr"].append(tp / (tp + fn))    
+            results["NB Clustered"]["fpr"].append(fp / (fp + tn))
             
             n_fold += 1
 
         # Final results (mean +- confidence interval)    
-        f1_mean_knn = mean(results["1-NN"])
-        f1_confidence_interval_knn = 2 * stdev(results["1-NN"])
-        f1_mean_nb = mean(results["NB"])
-        f1_confidence_interval_nb = 2 * stdev(results["NB"])
-        f1_mean_nb_clustered = mean(results["NB Clustered"])
-        f1_confidence_interval_nb_clustered = 2 * stdev(results["NB Clustered"])
-        results_file.write(f"FINAL SCORES:\n 1-NN = {f1_mean_knn} +- {f1_confidence_interval_knn}\n NB = {f1_mean_nb} +- {f1_confidence_interval_nb}\n NB Clustered = {f1_mean_nb_clustered} +- {f1_confidence_interval_nb_clustered}\n")
+        results_file.write(f"FINAL SCORES:\n")
+        for model, result in results.items():
+            f1_mean = mean(result["f1"])
+            f1_confidence_interval = 2 * stdev(result["f1"])
+            tpr_mean = mean(result["tpr"])
+            tpr_confidence_interval = 2 * stdev(result["tpr"])
+            fpr_mean = mean(result["fpr"])
+            fpr_confidence_interval = 2 * stdev(result["fpr"])
+            results_file.write(f" {model}:\n * F1 Score = {f1_mean} +- {f1_confidence_interval}\n * TPR = {tpr_mean} +- {tpr_confidence_interval}\n * FPR = {fpr_mean} +- {fpr_confidence_interval}\n")
+
+       

@@ -45,7 +45,7 @@ def get_kstar(features, class_label=None, dataset_name=None, n_fold=None):
                         ,init='k-means++'
                         ,n_init=10
                         ,max_iter=300
-                        ,random_state=42)
+                        ,random_state=2)
         
         kmeans.fit(features)
 
@@ -98,7 +98,7 @@ def generate_kstar_clusters(features, class_label, dataset_name=None, n_fold=Non
                     ,init='k-means++'
                     ,n_init=10
                     ,max_iter=300
-                    ,random_state=42)
+                    ,random_state=2)
     kmeans.fit(features)
     y_new = kmeans.labels_
 
