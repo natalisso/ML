@@ -87,11 +87,11 @@ def get_kstar(features, class_label=None, dataset_name=None, n_fold=None):
               title="Coeficiente de Silhouette por Número de Clusters",
               subtitle="Classe %d" % class_label)
 
-    return k_star
+    return k_star, sse_values[k_star - 2], silhouette_coefficients[k_star - 2]
 
 def generate_kstar_clusters(features, class_label, dataset_name=None, n_fold=None):
     # Get the best k
-    k_star = get_kstar(features, class_label, dataset_name, n_fold)
+    k_star, sse, silhouette_coefficient = get_kstar(features, class_label, dataset_name, n_fold)
     
     # Apply the K-Means algotihm to generate the k_star clusters
     kmeans = KMeans(n_clusters=k_star
@@ -102,4 +102,4 @@ def generate_kstar_clusters(features, class_label, dataset_name=None, n_fold=Non
     kmeans.fit(features)
     y_new = kmeans.labels_
 
-    return k_star, y_new
+    return k_star, sse, silhouette_coefficient, y_new

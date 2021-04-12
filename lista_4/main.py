@@ -98,7 +98,7 @@ for dataset_name in datasets:
             # Select and generate the best k clusters for each class in the training set
             for i in range(2):
                 features = [row for row,label in zip(X_train, y_train) if label == i]
-                k_star, y_train_new = generate_kstar_clusters(features, i, dataset_name, n_fold)
+                k_star, sse, silhouette_coefficient, y_train_new = generate_kstar_clusters(features, i, dataset_name, n_fold)
                 
                 X_train_final.extend(features)
     
@@ -106,7 +106,7 @@ for dataset_name in datasets:
                 y_train_final.extend(map_old_new_labels[i])
                 old_k_star = k_star
 
-                results_file.write("  * Class %d: k_star = %d\n" % (i, k_star))
+                results_file.write("  * Class %d: k_star = %d, sse = %f, silhouette coef = %f\n" % (i, k_star, sse, silhouette_coefficient))
 
             # Classification with the Naive Bayes algorithm and new labels
             nb_clustered = GaussianNB()
